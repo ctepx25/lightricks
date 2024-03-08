@@ -1,6 +1,6 @@
-## Observability Integration Script
+# Observability Integration Script
 
-### Build: 
+## Build: 
 1. Update env vars in Docker file
 > ENV OBSERVABILITY_ENDPOINT=""
 > 
@@ -16,7 +16,7 @@
 2. Build image
 > docker build -t \<tag\> .
 
-### Running the script:
+## Running the script:
 1. Make sure to export **coralogix api key** and **influxdb api token** env variables:
 >  export CORALOGIX_API_KEY="\**********************"
 >  
