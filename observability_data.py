@@ -25,7 +25,7 @@ def get_observability_data():
         r.raise_for_status()
     except requests.exceptions.RequestException as e:
         raise SystemExit(e)
-    data = r.json()[0]
+    data = r.json()
     print("Extracted data:\n", data,'\n')
     return data
 
@@ -49,13 +49,13 @@ def collect_log_entries(observability_data):
             json["text"] = str(log["message"])
             #json["timestamp"] = log["timestamp"]
             logEntries.append(json)
-            
+
     #if observability_data["event"]:
     #    json = {}
     #    json["severity"]  = 3
     #    json["text"] = observability_data["event"]["request"]
     #    logEntries.append(json)
-    
+
     return logEntries
 
 
@@ -68,7 +68,7 @@ def send_logs(logs_data):
             logs_data_chunk.append(logs_data[x])
             x += 1
 
-        payload = {"applicationName": observability_data["scriptName"], "subsystemName": subsystemName}
+        payload = {"applicationName": data["scriptName"], "subsystemName": subsystemName}
         payload["logEntries"] = logs_data_chunk
         print("Sending logs to coralogix endpoint:\n", payload)
         headers = {'Authorization': 'Bearer '+ coralogix_api_key, 'Content-Type': 'application/json'}
@@ -103,7 +103,8 @@ def send_metrics(metrics_data):
 
 
 observability_data = get_observability_data()
-logs_data = collect_log_entries(observability_data)
-metrics_data = collect_metrics(observability_data)
-send_logs(logs_data)
-send_metrics(metrics_data)
+for data in observability_data:
+    logs_data = collect_log_entries(data)
+    metrics_data = collect_metrics(data)
+    send_logs(logs_data)
+    send_metrics(metrics_data)
