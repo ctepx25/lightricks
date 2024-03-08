@@ -49,6 +49,13 @@ def collect_log_entries(observability_data):
             json["text"] = str(log["message"])
             #json["timestamp"] = log["timestamp"]
             logEntries.append(json)
+            
+    #if observability_data["event"]:
+    #    json = {}
+    #    json["severity"]  = 3
+    #    json["text"] = observability_data["event"]["request"]
+    #    logEntries.append(json)
+    
     return logEntries
 
 
