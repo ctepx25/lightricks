@@ -60,7 +60,7 @@ def collect_log_entries(observability_data):
 
 
 def send_logs(logs_data):
-    #This is to comply with api limitation of max packet size of 2MB
+    #This is in order comply with api limitation of max packet size of 2MB
     logs_data_chunk = []
     x = 0
     while x < len(logs_data):
