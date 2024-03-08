@@ -5,17 +5,17 @@ import time
 from influxdb_client_3 import InfluxDBClient3
 
 #Data endpoint
-observability_endpoint = "https://pub-6c2184153f6d479eacc33cee5c12ce64.r2.dev/payload"
+observability_endpoint = os.environ["OBSERVABILITY_ENDPOINT"]
 
 #Coralogix 
 coralogix_api_key = os.environ["CORALOGIX_API_KEY"]
-coralogix_endpoint = "https://ingress.eu2.coralogix.com/logs/v1/bulk"
-subsystemName = "logs"
+coralogix_endpoint = os.environ["CORALOGIX_ENDPOINT"]
+subsystemName = os.environ["CORALOGIX_SUBSYSTEM_NAME"]
 
 #Influxdb 
 influxdb_api_token = os.environ["INFLUXDB_API_TOKEN"]
-influxdb_endpoint = "eu-central-1-1.aws.cloud2.influxdata.com"
-influxdb_database = "lightricks"
+influxdb_endpoint = os.environ["INFULXDB_ENDPOINT"]
+influxdb_database = os.environ["INFLUXDB_DATABASE"]
 
 
 def get_observability_data():
