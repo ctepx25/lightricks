@@ -1,3 +1,4 @@
+import sys
 import os
 import requests
 import time
@@ -51,17 +52,27 @@ def collect_log_entries(observability_data):
     return logEntries
 
 
-def send_logs():
-    payload = {"applicationName": observability_data["scriptName"], "subsystemName": subsystemName}
-    payload["logEntries"] = collect_log_entries(observability_data)
-    print("Sending logs to coralogix endpoint:\n", payload)
-    headers = {'Authorization': 'Bearer '+ coralogix_api_key, 'Content-Type': 'application/json'}
-    try:
-        r = requests.post(coralogix_endpoint, json=payload, headers=headers)
-        r.raise_for_status()
-        print(r.status_code, r.reason, '\n')
-    except requests.exceptions.RequestException as e:
-        raise SystemExit(e)
+def send_logs(logs_data):
+    #This is to comply with api limitation of max packet size of 2MB
+    logs_data_chunk = []
+    x = 0
+    while x < len(logs_data):
+        while sys.getsizeof(logs_data_chunk) < 2097152 and x < len(logs_data):
+            logs_data_chunk.append(logs_data[x])
+            x += 1
+
+        payload = {"applicationName": observability_data["scriptName"], "subsystemName": subsystemName}
+        payload["logEntries"] = logs_data_chunk
+        print("Sending logs to coralogix endpoint:\n", payload)
+        headers = {'Authorization': 'Bearer '+ coralogix_api_key, 'Content-Type': 'application/json'}
+        try:
+            r = requests.post(coralogix_endpoint, json=payload, headers=headers)
+            r.raise_for_status()
+            print(r.status_code, r.reason, '\n')
+        except requests.exceptions.RequestException as e:
+            raise SystemExit(e)
+
+        logs_data_chunk = []
 
 
 def collect_metrics(observability_data):
@@ -73,8 +84,7 @@ def collect_metrics(observability_data):
     return lines
 
 
-def send_metrics():
-    metrics_data = collect_metrics(observability_data)
+def send_metrics(metrics_data):
     try:
         client = InfluxDBClient3(host=influxdb_endpoint, token=influxdb_api_token, database=influxdb_database)
         client.write(metrics_data,write_precision='s')
@@ -86,6 +96,7 @@ def send_metrics():
 
 
 observability_data = get_observability_data()
-send_logs()
-send_metrics()
-
+logs_data = collect_log_entries(observability_data)
+metrics_data = collect_metrics(observability_data)
+send_logs(logs_data)
+send_metrics(metrics_data)
