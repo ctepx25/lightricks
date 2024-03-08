@@ -6,6 +6,7 @@
 ### Running the script:
 1. Export coralogix api key and influxdb api token variables:
 >  export CORALOGIX_API_KEY="\**********************"
+> 
 > export INFLUXDB_API_TOKEN="\**********************"
 
 2. Run the container:
